@@ -1,0 +1,1 @@
+import ChromeCalc from "../components/ChromeCalc";
