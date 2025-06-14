@@ -2,10 +2,25 @@
   "name": "chrome-calc",
   "version": "1.0.0",
   "description": "In-Browser Calculator Chrome Extension",
+  "type": "module",
   "main": "index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "node esbuild.mjs",
+    "watch": "node esbuild.mjs -w",
+    "serve": "node esbuild.mjs -sw"
   },
   "author": "Josh Olsen",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "lit": "^3.3.0",
+    "mathjs": "^14.5.2"
+  },
+  "devDependencies": {
+    "dotenv-esbuild": "^1.1.0",
+    "esbuild": "^0.25.5",
+    "esbuild-copy-static-files": "^0.1.0",
+    "esbuild-plugin-import-glob": "^0.1.1",
+    "esbuild-plugin-lit": "^0.1.1",
+    "esbuild-plugins-node-modules-polyfill": "^1.7.1"
+  }
 }
