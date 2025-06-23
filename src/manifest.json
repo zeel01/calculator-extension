@@ -1,0 +1,10 @@
+{
+	"name": "Chrome Calc",
+	"description": "A popup calculator extension for Chrome.",
+	"version": "1.0.0",
+	"manifest_version": 3,
+	"action": {
+		"default_popup": "index.html",
+		"default_icon": "./resources/icon.png"
+	}
+}

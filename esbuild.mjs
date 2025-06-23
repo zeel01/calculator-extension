@@ -83,6 +83,12 @@ const frontend = await esbuild.context({
 			dereference: true,
 			preserveTimestamps: true
 		}),
+		copyStaticFiles({
+			src: "src/manifest.json",
+			dest: "dist/manifest.json",
+			dereference: true,
+			preserveTimestamps: true
+		}),
 		new Dotenv(),
 		litplugin()
 	],
