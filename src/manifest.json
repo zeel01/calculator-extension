@@ -1,6 +1,6 @@
 {
-	"name": "Chrome Calc",
-	"description": "A popup calculator extension for Chrome.",
+	"name": "Calculator Extension",
+	"description": "A calculator extension for Chrome.",
 	"version": "1.0.0",
 	"manifest_version": 3,
 	"action": {

@@ -1,1 +1,1 @@
-import ChromeCalc from "../components/ChromeCalc";
+import "../components/Calculator.js";

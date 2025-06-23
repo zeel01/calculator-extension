@@ -11,8 +11,8 @@ import { create, all } from "mathjs";
 
 const math = create(all, {});
 
-@customElement("chrome-calc")
-export default class ChromeCalc extends LitElement {
+@customElement("calculator-component")
+export default class Calculator extends LitElement {
 	static styles = css`
 		${styles}
 		${katexStyles}
@@ -54,7 +54,6 @@ export default class ChromeCalc extends LitElement {
 		this.#history = JSON.parse(window.localStorage.getItem("calc-history"), math.reviver) || [];
 		this.scope = JSON.parse(window.localStorage.getItem("calc-scope"), math.reviver) || {};
 		this.historyIndex = this.#history.length;
-		console.log("ChromeCalc connected", this.history);
 	}
 
 	evaluate(expression) {
