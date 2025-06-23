@@ -1,8 +1,39 @@
+@import url("katex/dist/katex.min.css");
+
+:root {
+	color-scheme: light dark;
+}
+
+html {
+	height: 600px;
+	width: 600px;
+}
+
 body {
+	margin: 0;
+	width: 100%;
+	height: 100%;
 	display: grid;
-	place-items: center;
+	place-items: stretch;
+	grid-template: 100% / 100%;
+	background-color: light-dark(white, #1a1a1e);
 }
 
 chrome-calc {
-	width: 800px;
+	width: 100%;
+	height: 100%;
+
+	max-height: 100%;
+
+	--background-color:        light-dark(white, #1a1a1e);
+	--text-color:              light-dark(black, #f5f5f5);
+	--button-color:            light-dark(hsl(196deg 75.21% 90%), hsl(196deg 75.21% 20%));
+	--button-hover-color:      light-dark(hsl(196deg 75.21% 80%), hsl(196deg 75.21% 30%));
+	--button-active-color:     light-dark(hsl(196deg 75.21% 70%), hsl(196deg 75.21% 40%));
+	--button-text-color:       light-dark(black, #f5f5f5);
+	--button-hover-text-color: light-dark(black, #f5f5f5);
+	--button-border-color:     light-dark(#CCC, #555);
+	--input-border-color:      light-dark(#CCC, #555);
+	--history-item-odd-bg:     light-dark(hsl(196deg 75.21% 95%), hsl(196deg 75.21% 15%));
+	--history-item-even-bg:    light-dark(transparent, transparent);
 }

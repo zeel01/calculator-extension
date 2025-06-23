@@ -4,6 +4,8 @@ import { ref, createRef } from "lit/directives/ref.js";
 import { classMap } from "lit/directives/class-map.js";
 import { customElement, property, eventOptions, query, queryAll, queryAssignedElements, state } from "lit/decorators.js";
 import styles from "../styles/calculator.css";
+import katex from "katex";
+import katexStyles from "../../node_modules/katex/dist/katex.css";
 
 import { create, all } from "mathjs";
 
@@ -11,13 +13,19 @@ const math = create(all, {});
 
 @customElement("chrome-calc")
 export default class ChromeCalc extends LitElement {
-	static styles = styles;
+	static styles = css`
+		${styles}
+		${katexStyles}
+	`;
 
 	#history = [];
+	scope = { ans: 0 };
+	historyIndex = 0;
 
 	@property({ type: Object })
 	set history(value) {
 		this.#history = Array.isArray(value) ? value : [value];
+		console.log("History updated", this.#history);
 		setTimeout(() => this.storeHistory(), 0);
 	}
 
@@ -37,41 +45,78 @@ export default class ChromeCalc extends LitElement {
 	}
 
 	storeHistory() {
-		window.localStorage.setItem("calc-history", JSON.stringify(this.history));
+		window.localStorage.setItem("calc-history", JSON.stringify(this.history, math.replacer));
+		window.localStorage.setItem("calc-scope", JSON.stringify(this.scope, math.replacer));
 	}
 
 	connectedCallback() {
 		super.connectedCallback();
-		this.#history = JSON.parse(window.localStorage.getItem("calc-history")) || [];
+		this.#history = JSON.parse(window.localStorage.getItem("calc-history"), math.reviver) || [];
+		this.scope = JSON.parse(window.localStorage.getItem("calc-scope"), math.reviver) || {};
+		this.historyIndex = this.#history.length;
+		console.log("ChromeCalc connected", this.history);
 	}
 
 	evaluate(expression) {
-		try {
-			const result = math.evaluate(expression);
+		let historyItem = {};
 
-			this.history = [...this.history, {
-				expression: expression,
+		try {
+			let node = null;
+
+			try {
+				node = math.parse(expression);
+
+				if (node.fn == "unaryPlus" || node.fn == "unaryMinus") {
+					// If the expression starts with a unary operator, 
+					// treat it as if it was a binary operator with 'ans' as the first operand
+					node = math.parse("ans" + expression);
+				}
+			}
+			catch (error) {
+				if (error.message.includes("Value expected (char 1)")) { 
+					// If the expression produces an error indicating that there is a missing first operand,
+					// we assume the user meant to use 'ans' as the first operand
+					node = math.parse("ans" + expression);
+				}
+				else throw error;
+			}
+
+			const result = node.evaluate(this.scope);
+			this.scope.ans = result;
+
+			historyItem = {
+				error: false,
+				original: expression,
+				tree: node,
+				expression: node.toString(),
+				TeX: node.toTex(),
 				result: result
-			}];
+			};
 
 			this.input.value = "";
+
 		} catch (error) {
-			this.history = [...this.history, {
-				expression: expression,
+			historyItem = {
+				error: true,
+				original: expression,
+				tree: null,
+				expression: "",
+				TeX: "",
 				result: `Error: ${error.message}`
-			}];
+			};
 		}
 
+		this.history = [...this.history, historyItem];
+		this.historyIndex = this.history.length;
+		
 		const customEvent = new CustomEvent("calc-evaluate", {
-			detail: {
-				expression: expression,
-				result: this.history[this.history.length - 1].result
-			},
+			detail: historyItem,
 			bubbles: true,
 			composed: true
 		});
 
 		this.dispatchEvent(customEvent);
+
 	}
 
 	handleEnter(event) {
@@ -87,20 +132,38 @@ export default class ChromeCalc extends LitElement {
 			event.preventDefault();
 			this.handleEnter(event);
 		}
+
+		if (event.key === "Up" || event.key === "ArrowUp") {
+			event.preventDefault();
+			this.historyIndex = Math.max(0, this.historyIndex - 1);
+			this.input.value = this.history[this.historyIndex]?.original || "";
+		}
+
+		if (event.key === "Down" || event.key === "ArrowDown") {
+			event.preventDefault();
+			this.historyIndex = Math.min(this.history.length, this.historyIndex + 1);
+			this.input.value = this.history[this.historyIndex]?.original || "";
+		}
 	}
 
 	handleExpressionClick(item) {
-		this.input.value += item.expression;
+		this.input.value += item.original;
 		this.input.focus();
 	}
 	
 	handleResultClick(item) {
+		if (item.error) return;
 		this.input.value += item.result;
 		this.input.focus();
 	}
 
 	clearHistory() {
 		this.history = [];
+		this.scope = { ans: 0 };
+	}
+
+	firstUpdated() {
+		this.input.focus();
 	}
 
 	updated() {
@@ -110,14 +173,20 @@ export default class ChromeCalc extends LitElement {
 	render() {
 		return html`
 			<menu>
-				<button @click=${this.clearHistory}>Clear</button>
+				<a @click=${this.clearHistory}>Clear</a>
 			</menu>
 			<output ${ref(this.outputRef)}>
 				<ul class="history">
 					${this.history.map(item => html`
-						<li class="history-item">
-							<span class="expression" @click=${() => this.handleExpressionClick(item)}>${item.expression}</span>
-							<span class="result" @click=${() => this.handleResultClick(item)}>${item.result}</span>
+						<li class=${classMap({ "history-item": true, "error": item.error })}>
+							<span class="expression" @click=${() => this.handleExpressionClick(item)}>
+								${item.TeX 
+									? unsafeHTML(katex.renderToString(item.TeX, { throwOnError: false })) 
+									: item.expression || item.original }
+							</span>
+							<span class="result" @click=${() => this.handleResultClick(item)}>
+								${item.result}
+							</span>
 						</li>
 					`)}
 				</ul>
@@ -125,7 +194,7 @@ export default class ChromeCalc extends LitElement {
 			<input type="text" 
 				${ref(this.inputRef)}
 				name="calc-input"
-				placeholder=">_"
+				placeholder=">"
 				@input="${this.handleInput}"
 				@keydown="${this.handleKeydown}"
 			>
