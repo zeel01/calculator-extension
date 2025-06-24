@@ -3,3 +3,5 @@ dist
 sketches
 *.log
 calculator.zip
+*.crx
+*.pem

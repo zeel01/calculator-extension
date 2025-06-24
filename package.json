@@ -12,7 +12,7 @@
     "build": "node esbuild.mjs",
     "watch": "node esbuild.mjs -w",
     "serve": "node esbuild.mjs -sw",
-    "bundle": "npm run clean && npm run build && zip -r calculator.zip dist",
+    "bundle": "npm run clean && npm run build && (cd dist && zip -r ../calculator.zip .)",
     "clean": "rimraf dist calculator.zip"
   },
   "author": "Josh Olsen",
