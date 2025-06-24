@@ -1,1 +1,1 @@
-import "../components/Calculator.js";
+import "../components/**/*.js";

@@ -4,8 +4,6 @@ import { ref, createRef } from "lit/directives/ref.js";
 import { classMap } from "lit/directives/class-map.js";
 import { customElement, property, eventOptions, query, queryAll, queryAssignedElements, state } from "lit/decorators.js";
 import styles from "../styles/calculator.css";
-import katex from "katex";
-import katexStyles from "../../node_modules/katex/dist/katex.css";
 
 import { create, all } from "mathjs";
 
@@ -13,10 +11,7 @@ const math = create(all, {});
 
 @customElement("calculator-component")
 export default class Calculator extends LitElement {
-	static styles = css`
-		${styles}
-		${katexStyles}
-	`;
+	static styles = styles;
 
 	#history = [];
 	scope = { ans: 0 };
@@ -96,12 +91,12 @@ export default class Calculator extends LitElement {
 
 		} catch (error) {
 			historyItem = {
-				error: true,
+				error: `Error: ${error.message}`,
 				original: expression,
 				tree: null,
 				expression: "",
 				TeX: "",
-				result: `Error: ${error.message}`
+				result: ""
 			};
 		}
 
@@ -157,15 +152,19 @@ export default class Calculator extends LitElement {
 	}
 
 	clearHistory() {
-		this.history = [];
 		this.scope = { ans: 0 };
+		this.history = [];
+		this.input.value = "";
+		this.historyIndex = 0;
+		this.input.focus();
 	}
 
 	firstUpdated() {
 		this.input.focus();
 	}
 
-	updated() {
+	async updated() {
+		await this.updateComplete;
 		this.output.scrollTop = this.output.scrollHeight;
 	}
 
@@ -178,14 +177,13 @@ export default class Calculator extends LitElement {
 				<ul class="history">
 					${this.history.map(item => html`
 						<li class=${classMap({ "history-item": true, "error": item.error })}>
-							<span class="expression" @click=${() => this.handleExpressionClick(item)}>
-								${item.TeX 
-									? unsafeHTML(katex.renderToString(item.TeX, { throwOnError: false })) 
-									: item.expression || item.original }
-							</span>
+							<katex-component class="expression" @click=${() => this.handleExpressionClick(item)}>
+								${item.TeX || item.expression || item.original }
+							</katex-component>
 							<span class="result" @click=${() => this.handleResultClick(item)}>
 								${item.result}
 							</span>
+							${item.error ? html`<span class="error">${item.error}</span>` : ""}
 						</li>
 					`)}
 				</ul>

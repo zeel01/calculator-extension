@@ -46,17 +46,21 @@ output {
 		display: flex;
 		flex-direction: row;
 		flex-wrap: wrap;
-		gap: 0.5em;
-		justify-content: space-between;
+		column-gap: 3ch;
+		row-gap: 0.5em;
+		align-items: center;
 
-		span {
+		.expression, .result {
 			cursor: pointer;
 		}
 
-		&.error {
-			.result {
-				cursor: initial;
-			}
+		.result, .error {
+			text-align: right;
+			flex-grow: 1;
+		}
+
+		.error {
+			color: var(--error-color, red);
 		}
 	}
 
