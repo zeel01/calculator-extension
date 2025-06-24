@@ -7,14 +7,17 @@
   "scripts": {
     "build": "node esbuild.mjs",
     "watch": "node esbuild.mjs -w",
-    "serve": "node esbuild.mjs -sw"
+    "serve": "node esbuild.mjs -sw",
+    "bundle": "npm run clean && npm run build && zip -r calculator.zip dist",
+    "clean": "rimraf dist calculator.zip"
   },
   "author": "Josh Olsen",
   "license": "MIT",
   "dependencies": {
     "katex": "^0.16.22",
     "lit": "^3.3.0",
-    "mathjs": "^14.5.2"
+    "mathjs": "^14.5.2",
+    "rimraf": "^6.0.1"
   },
   "devDependencies": {
     "dotenv-esbuild": "^1.1.0",

@@ -154,4 +154,5 @@ if (!args.watch && !args.serve) {
 	styles.dispose();
 	console.log("");
 	console.timeEnd("Build completed in");
+	process.exit(0);
 }
