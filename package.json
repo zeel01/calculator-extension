@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "A calculator extension for Chrome.",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zeel01/calculator-extension.git"
+  },
   "main": "index.html",
   "scripts": {
     "build": "node esbuild.mjs",
