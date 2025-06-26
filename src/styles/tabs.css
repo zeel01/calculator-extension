@@ -1,0 +1,74 @@
+:host(tab-list) {
+	font-family: var(--font-family);
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: flex-start;
+	align-items: stretch;
+}
+
+:host(tab-item) {
+	min-width: 3ch;
+	user-select: none;
+	font-family: var(--font-family);
+	position: relative;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	padding-inline: 1ch;
+
+	background-color: var(--tab-color);
+	color: var(--tab-text-color);
+	border: 1px solid var(--tab-border-color);
+	border-radius: var(--tab-border-radius);
+
+	transition: background-color 0.2s ease, color 0.2s ease;
+
+	cursor: pointer;
+}
+
+:host(tab-item[active]) {
+	background-color: var(--tab-active-color);
+	color: var(--tab-active-text-color);
+}
+
+:host(tab-item:hover) {
+	background-color: var(--tab-hover-color);
+	color: var(--tab-hover-text-color);
+}
+
+:host(tab-item[active]:hover) {
+	background-color: var(--tab-active-hover-color);
+	color: var(--tab-active-text-color);
+}
+
+.add {
+	min-width: auto;
+	margin-left: 1ch;
+	color: inherit;
+}
+
+.close {
+	position: absolute;
+	right: 0;
+	visibility: hidden;
+	background-color: inherit;
+	padding-inline: 0.5ch;
+}
+
+:host(tab-item:hover:not(:focus-within)) .close {
+	visibility: visible;
+}
+
+[contenteditable] {
+	cursor: text;
+
+	&:focus, &:focus-visible {
+		background-color: rgba(0, 0, 0, 0.2);
+		outline: none;
+		box-shadow: 0 0 4px 0px rgba(0, 0, 0, 0.2);
+		padding-inline: 0.5em;
+		padding-block: 0.15em;
+	}
+}

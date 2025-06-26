@@ -2,24 +2,48 @@
 
 :root {
 	color-scheme: light dark;
-}
-
-html {
-	height: 600px;
-	width: 600px;
+	--font-family: Arial, Helvetica, sans-serif;
 }
 
 body {
 	margin: 0;
 	width: 100%;
 	height: 100%;
+	background-color: light-dark(white, #1a1a1e);
+	font-family: var(--font-family);
+	font-size: 1em;
+}
+
+calculator-extension {
+	width: 100%;
+	height: 100%;
+
 	display: grid;
 	place-items: stretch;
-	grid-template: 100% / 100%;
-	background-color: light-dark(white, #1a1a1e);
+	grid-template:
+		"tabs" 1fr
+		"calculator" calc(100% - 2em)
+		/ 1fr;
+
+}
+
+tab-list {
+	grid-area: tabs;
+	padding-top: 0.5em;
+
+	--tab-color:                   light-dark(hsl(196deg 75.21% 90%), hsl(196deg 75.21% 20%));
+	--tab-hover-color:             light-dark(hsl(196deg 75.21% 80%), hsl(196deg 75.21% 30%));
+	--tab-active-color:            light-dark(hsl(196deg 75.21% 70%), hsl(196deg 75.21% 40%));
+	--tab-active-hover-color:      light-dark(hsl(196deg 75.21% 60%), hsl(196deg 75.21% 50%));
+	--tab-text-color:              light-dark(black, #f5f5f5);
+	--tab-active-text-color:       light-dark(black, #f5f5f5);
+	--tab-hover-text-color:        light-dark(black, #f5f5f5);
+	--tab-border-color:            light-dark(#CCC, #555);
+	--tab-border-radius:           4px 4px 0 0;
 }
 
 calculator-component {
+	grid-area: calculator;
 	width: 100%;
 	height: 100%;
 

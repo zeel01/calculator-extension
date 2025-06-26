@@ -13,20 +13,22 @@ const math = create(all, {});
 export default class Calculator extends LitElement {
 	static styles = styles;
 
-	#history = [];
-	scope = { ans: 0 };
+	// #history = [];
 	historyIndex = 0;
 
-	@property({ type: Object })
-	set history(value) {
-		this.#history = Array.isArray(value) ? value : [value];
-		console.log("History updated", this.#history);
-		setTimeout(() => this.storeHistory(), 0);
-	}
+	@property({ type: Object }) accessor scope = { ans: 0 };
+	@property({ type: Array }) accessor history = [];
 
-	get history() {
-		return this.#history;
-	}
+	// @property({ type: Array })
+	// set history(value) {
+	// 	this.#history = Array.isArray(value) ? value : [value];
+	// 	console.log("History updated", this.#history);
+	// 	setTimeout(() => this.storeData(), 0);
+	// }
+
+	// get history() {
+	// 	return this.#history;
+	// }
 
 	inputRef = createRef();
 	outputRef = createRef();
@@ -37,18 +39,6 @@ export default class Calculator extends LitElement {
 
 	get output() {
 		return this.outputRef.value;
-	}
-
-	storeHistory() {
-		window.localStorage.setItem("calc-history", JSON.stringify(this.history, math.replacer));
-		window.localStorage.setItem("calc-scope", JSON.stringify(this.scope, math.replacer));
-	}
-
-	connectedCallback() {
-		super.connectedCallback();
-		this.#history = JSON.parse(window.localStorage.getItem("calc-history"), math.reviver) || [];
-		this.scope = JSON.parse(window.localStorage.getItem("calc-scope"), math.reviver) || {};
-		this.historyIndex = this.#history.length;
 	}
 
 	evaluate(expression) {
@@ -99,18 +89,14 @@ export default class Calculator extends LitElement {
 				result: ""
 			};
 		}
-
-		this.history = [...this.history, historyItem];
-		this.historyIndex = this.history.length;
 		
-		const customEvent = new CustomEvent("calc-evaluate", {
+		const customEvent = new CustomEvent("evaluate", {
 			detail: historyItem,
 			bubbles: true,
 			composed: true
 		});
 
 		this.dispatchEvent(customEvent);
-
 	}
 
 	handleEnter(event) {
@@ -151,14 +137,6 @@ export default class Calculator extends LitElement {
 		this.input.focus();
 	}
 
-	clearHistory() {
-		this.scope = { ans: 0 };
-		this.history = [];
-		this.input.value = "";
-		this.historyIndex = 0;
-		this.input.focus();
-	}
-
 	firstUpdated() {
 		this.input.focus();
 	}
@@ -169,10 +147,9 @@ export default class Calculator extends LitElement {
 	}
 
 	render() {
+		this.historyIndex = this.history.length;
+
 		return html`
-			<menu>
-				<a @click=${this.clearHistory}>Clear</a>
-			</menu>
 			<output ${ref(this.outputRef)}>
 				<ul class="history">
 					${this.history.map(item => html`
